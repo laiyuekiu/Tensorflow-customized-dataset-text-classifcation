@@ -1,19 +1,19 @@
-#clean
+#I run this in Google Colab
+#from __future__ import absolute_import, division, print_function, unicode_literals
 
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-try:
+#try:
   # %tensorflow_version only exists in Colab.
-  !pip install -q tf-nightly
-except Exception:
-  pass
-import tensorflow as tf
+#  !pip install -q tf-nightly
+#except Exception:
+#  pass
+#import tensorflow as tf
 # tf.enable_eager_execution()
-tf.executing_eagerly()
+#tf.executing_eagerly()
 
 import tensorflow_datasets as tfds 
 import os
 
+#You may use your own text file 
 DIRECTORY_URL = ['https://raw.githubusercontent.com/laiyuekiu/Tensorflow-customized-dataset-text-classifcation/master/crime.txt', 'https://raw.githubusercontent.com/laiyuekiu/Tensorflow-customized-dataset-text-classifcation/master/food.txt', 'https://raw.githubusercontent.com/laiyuekiu/Tensorflow-customized-dataset-text-classifcation/master/edu.txt', 'https://raw.githubusercontent.com/laiyuekiu/Tensorflow-customized-dataset-text-classifcation/master/tech.txt']
 FILE_NAMES = ['crime.txt', 'food.txt', 'edu.txt', 'tech.txt']
 text_dir = []
@@ -21,7 +21,6 @@ parent_dir = []
 
 for n in range(len(FILE_NAMES)):
   text_dir.append(tf.keras.utils.get_file(FILE_NAMES[n], origin=DIRECTORY_URL[n]))
-
 
 parent_dir = os.path.dirname(text_dir[0])
 
@@ -36,6 +35,7 @@ for i in range(len(FILE_NAMES)):
   labeled_dataset = lines_dataset.map(lambda ex: labeler(ex, i))
   labeled_data_sets.append(labeled_dataset)
 
+#You may adjust the neural network 
 BUFFER_SIZE = 3000
 BATCH_SIZE = 20
 TAKE_SIZE = 200
@@ -100,6 +100,7 @@ test_data = test_data.padded_batch(BATCH_SIZE)
 
 vocab_size += 1
 
+#The classification model setting
 model = tf.keras.Sequential([
     tf.keras.layers.Embedding(encoder.vocab_size, 128),
     tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64)),
@@ -126,6 +127,7 @@ def pad_to_size(vec, size):
   vec.extend(zeros)
   return vec
 
+#Topic classifcation prediction
 def sample_predict(sample_pred_text, pad):
   encoded_sample_pred_text = encoder.encode(sample_pred_text)
 
@@ -136,6 +138,7 @@ def sample_predict(sample_pred_text, pad):
 
   return (predictions)
 
+#This is my testing sample of topic classification
 sample_pred_text = ('We are having lunch in a Chinese restaurant and we order tea and coffee. The food in there is very yummy. We are full and not feel hungry.') 
 predictions = sample_predict(sample_pred_text, pad=False)
 print("NO padding text: ", predictions)
